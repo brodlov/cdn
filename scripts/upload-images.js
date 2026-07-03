@@ -41,7 +41,12 @@ const limit = pLimit(5); // max 5 download bersamaan
 
         for (const txt of txtFiles) {
 
+            const baseName = path.parse(txt).name;
+
             let number = 1;
+
+            const pageOutputDir = path.join(outputDir, baseName);
+            fs.mkdirSync(pageOutputDir, { recursive: true });
 
             const lines = fs.readFileSync(
                 path.join(categoryPath, txt),
@@ -80,7 +85,7 @@ const limit = pLimit(5); // max 5 download bersamaan
 
                             const baseName = path.parse(txt).name;
                             const filename = `${baseName}-${String(number).padStart(4, "0")}.${ext}`;
-                            const filePath = path.join(outputDir, filename);
+                            const filePath = path.join(pageOutputDir, filename);
 
                             fs.writeFileSync(filePath, res.data);
 
