@@ -49,6 +49,7 @@ if (!fs.existsSync(outputDir)) {
 for (const url of lines) {
 
     console.log(`Download : ${url}`);
+
 try {
 
     const response = await axios({
@@ -78,6 +79,11 @@ try {
     console.log(`✓ ${filename}`);
 
     number++;
+
+} catch (err) {
+
+    console.log(`✗ Gagal download: ${url}`);
+    console.log(err.message);
 
 } catch (err) {
 
