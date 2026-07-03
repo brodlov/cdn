@@ -35,11 +35,13 @@ const limit = pLimit(5); // max 5 download bersamaan
         const txtFiles = fs.readdirSync(categoryPath)
             .filter(file => file.endsWith(".txt"));
 
-        let number = 1;
+        
 
         const tasks = [];
 
         for (const txt of txtFiles) {
+
+            let number = 1;
 
             const lines = fs.readFileSync(
                 path.join(categoryPath, txt),
@@ -76,7 +78,8 @@ const limit = pLimit(5); // max 5 download bersamaan
                             else if (type.includes("avif")) ext = "avif";
                             else if (type.includes("jpeg")) ext = "jpg";
 
-                            const filename = `${String(number).padStart(4, "0")}.${ext}`;
+                            const baseName = path.parse(txt).name;
+                            const filename = `${baseName}-${String(number).padStart(4, "0")}.${ext}`;
                             const filePath = path.join(outputDir, filename);
 
                             fs.writeFileSync(filePath, res.data);
