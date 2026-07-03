@@ -3,3 +3,6 @@ https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy2/bitluxy2-000001.png
 https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy2/bitluxy2-000002.jpg
 https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy2/bitluxy2-000003.jpg
 https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy2/bitluxy2-000003.png
+https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy2/bitluxy2-000004.jpg
+https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy2/bitluxy2-000005.png
+https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy2/bitluxy2-000006.png
