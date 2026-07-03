@@ -1,6 +1,9 @@
 import fs from "fs";
 import path from "path";
 import axios from "axios";
+import pLimit from "p-limit";
+
+const limit = pLimit(5); // max 5 download bersamaan
 
 (async () => {
 
@@ -22,26 +25,21 @@ import axios from "axios";
 
         const categoryPath = path.join(URLS_DIR, category);
 
-        if (!fs.statSync(categoryPath).isDirectory()) {
-            continue;
-        }
+        if (!fs.statSync(categoryPath).isDirectory()) continue;
 
-        console.log(`Kategori : ${category}`);
+        console.log(`Kategori: ${category}`);
 
         const outputDir = path.join(IMAGES_DIR, category);
-
-        if (!fs.existsSync(outputDir)) {
-            fs.mkdirSync(outputDir, { recursive: true });
-        }
+        fs.mkdirSync(outputDir, { recursive: true });
 
         const txtFiles = fs.readdirSync(categoryPath)
             .filter(file => file.endsWith(".txt"));
 
         let number = 1;
 
-        for (const txt of txtFiles) {
+        const tasks = [];
 
-            console.log(`  File : ${txt}`);
+        for (const txt of txtFiles) {
 
             const lines = fs.readFileSync(
                 path.join(categoryPath, txt),
@@ -51,63 +49,61 @@ import axios from "axios";
             .map(v => v.trim())
             .filter(Boolean);
 
-            console.log(`  Total URL : ${lines.length}`);
+            console.log(`File: ${txt} | Total: ${lines.length}`);
 
             for (const url of lines) {
 
-                console.log(`Download : ${url}`);
+                tasks.push(limit(async () => {
 
-                try {
+                    const downloadWithRetry = async (retries = 3) => {
+                        try {
+                            const res = await axios({
+                                url,
+                                method: "GET",
+                                responseType: "arraybuffer",
+                                timeout: 30000,
+                                headers: {
+                                    "User-Agent": "Mozilla/5.0"
+                                }
+                            });
 
-                    const response = await axios({
-                        url,
-                        method: "GET",
-                        responseType: "arraybuffer",
-                        timeout: 30000,
-                        headers: {
-                            "User-Agent": "Mozilla/5.0"
+                            const type = res.headers["content-type"] || "";
+
+                            let ext = "jpg";
+                            if (type.includes("png")) ext = "png";
+                            else if (type.includes("webp")) ext = "webp";
+                            else if (type.includes("gif")) ext = "gif";
+                            else if (type.includes("avif")) ext = "avif";
+                            else if (type.includes("jpeg")) ext = "jpg";
+
+                            const filename = `${category}-${String(number).padStart(6, "0")}.${ext}`;
+                            const filePath = path.join(outputDir, filename);
+
+                            fs.writeFileSync(filePath, res.data);
+
+                            console.log(`✓ ${filename}`);
+
+                            number++;
+
+                        } catch (err) {
+
+                            if (retries > 0) {
+                                console.log(`Retry: ${url}`);
+                                return downloadWithRetry(retries - 1);
+                            }
+
+                            console.log(`✗ Failed: ${url}`);
                         }
-                    });
+                    };
 
-                    const contentType = response.headers["content-type"] || "";
+                    return downloadWithRetry();
 
-                    let ext = "jpg";
-
-                    if (contentType.includes("png")) ext = "png";
-                    else if (contentType.includes("webp")) ext = "webp";
-                    else if (contentType.includes("gif")) ext = "gif";
-                    else if (contentType.includes("avif")) ext = "avif";
-                    else if (contentType.includes("jpeg")) ext = "jpg";
-                    else if (contentType.includes("jpg")) ext = "jpg";
-
-                    const filename =
-                        `${category}-${String(number).padStart(6, "0")}.${ext}`;
-
-                    fs.writeFileSync(
-                        path.join(outputDir, filename),
-                        response.data
-                    );
-
-                    console.log(`✓ ${filename}`);
-
-                    number++;
-
-                } catch (err) {
-
-                    console.log(`✗ Gagal : ${url}`);
-
-                    if (err.response) {
-                        console.log(`Status : ${err.response.status}`);
-                    } else {
-                        console.log(err.message);
-                    }
-
-                }
+                }));
 
             }
-
         }
 
+        await Promise.all(tasks);
     }
 
 })();
