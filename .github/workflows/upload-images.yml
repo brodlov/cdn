@@ -45,9 +45,6 @@ jobs:
           CHANGED_FILES: ${{ steps.changed.outputs.all_changed_files }}
         run: node scripts/generate-cdn.js
 
-      - name: Debug changed files
-        run: |
-          echo "${{ steps.changed.outputs.all_changed_files }}"      
 
       # 3. Commit hasil (images + urls)
       - name: Commit changes
