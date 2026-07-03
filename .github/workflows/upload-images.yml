@@ -1,4 +1,4 @@
-name: Upload Images
+name: Upload & Generate CDN URLs
 
 on:
   workflow_dispatch:
@@ -7,27 +7,37 @@ permissions:
   contents: write
 
 jobs:
-  upload:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 24
 
-      - run: npm install
+      - name: Install dependencies
+        run: npm install
 
-      - run: npm run upload
+      # 1. Upload images (kalau ada script download/upload kamu)
+      - name: Upload Images
+        run: npm run upload
 
-      - name: Commit images
+      # 2. Generate CDN URLs dari folder images
+      - name: Generate CDN Lists
+        run: npm run cdn
+
+      # 3. Commit hasil (images + urls)
+      - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add images
+          git add images urls-generated
 
-          git diff --cached --quiet || git commit -m "Add downloaded images"
+          git diff --cached --quiet || git commit -m "Update images + CDN urls"
 
           git push
