@@ -76,7 +76,7 @@ const limit = pLimit(5); // max 5 download bersamaan
                             else if (type.includes("avif")) ext = "avif";
                             else if (type.includes("jpeg")) ext = "jpg";
 
-                            const filename = `${category}-${String(number).padStart(6, "0")}.${ext}`;
+                            const filename = `${String(number).padStart(4, "0")}.${ext}`;
                             const filePath = path.join(outputDir, filename);
 
                             fs.writeFileSync(filePath, res.data);
