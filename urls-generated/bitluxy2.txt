@@ -18,7 +18,9 @@ https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy2/recipes-0003.jpg
 https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy2/recipes-0004.png
 https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy2/recipes-0005.png
 https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy2/recipes/recipes-0001.jpg
+https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy2/recipes/recipes-0001.png
 https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy2/recipes/recipes-0002.jpg
 https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy2/recipes/recipes-0003.jpg
 https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy2/recipes/recipes-0004.png
+https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy2/recipes/recipes-0005.jpg
 https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy2/recipes/recipes-0005.png
