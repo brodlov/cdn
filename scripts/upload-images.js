@@ -3,99 +3,111 @@ import path from "path";
 import axios from "axios";
 
 (async () => {
-const URLS_DIR = "./urls";
-const IMAGES_DIR = "./images";
 
-if (!fs.existsSync(IMAGES_DIR)) {
-    fs.mkdirSync(IMAGES_DIR, { recursive: true });
-}
+    const URLS_DIR = "./urls";
+    const IMAGES_DIR = "./images";
 
+    if (!fs.existsSync(IMAGES_DIR)) {
+        fs.mkdirSync(IMAGES_DIR, { recursive: true });
+    }
 
-const categories = fs.readdirSync(URLS_DIR);
+    if (!fs.existsSync(URLS_DIR)) {
+        console.log("Folder urls tidak ditemukan.");
+        process.exit(1);
+    }
 
-for (const category of categories) {
+    const categories = fs.readdirSync(URLS_DIR);
 
-    const categoryPath = path.join(URLS_DIR, category);
+    for (const category of categories) {
 
-    if (!fs.statSync(categoryPath).isDirectory()) continue;
+        const categoryPath = path.join(URLS_DIR, category);
 
-    console.log(`Kategori : ${category}`);
+        if (!fs.statSync(categoryPath).isDirectory()) {
+            continue;
+        }
 
-    const outputDir = path.join(IMAGES_DIR, category);
+        console.log(`Kategori : ${category}`);
 
-if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
-}
+        const outputDir = path.join(IMAGES_DIR, category);
 
-    const txtFiles = fs.readdirSync(categoryPath)
-        .filter(file => file.endsWith(".txt"));
+        if (!fs.existsSync(outputDir)) {
+            fs.mkdirSync(outputDir, { recursive: true });
+        }
 
-    for (const txt of txtFiles) {
-
-        console.log(`  File : ${txt}`);
-
-        const lines = fs.readFileSync(
-            path.join(categoryPath, txt),
-            "utf8"
-        )
-        .split("\n")
-        .map(v => v.trim())
-        .filter(Boolean);
-
-        console.log(`  Total URL : ${lines.length}`);
+        const txtFiles = fs.readdirSync(categoryPath)
+            .filter(file => file.endsWith(".txt"));
 
         let number = 1;
 
-for (const url of lines) {
+        for (const txt of txtFiles) {
 
-    console.log(`Download : ${url}`);
+            console.log(`  File : ${txt}`);
 
-try {
+            const lines = fs.readFileSync(
+                path.join(categoryPath, txt),
+                "utf8"
+            )
+            .split(/\r?\n/)
+            .map(v => v.trim())
+            .filter(Boolean);
 
-    const response = await axios({
-        url,
-        method: "GET",
-        responseType: "arraybuffer",
-        timeout: 30000
-    });
+            console.log(`  Total URL : ${lines.length}`);
 
-    let ext = "jpg";
+            for (const url of lines) {
 
-    const type = response.headers["content-type"] || "";
+                console.log(`Download : ${url}`);
 
-    if (type.includes("png")) ext = "png";
-    else if (type.includes("webp")) ext = "webp";
-    else if (type.includes("jpeg")) ext = "jpg";
-    else if (type.includes("jpg")) ext = "jpg";
+                try {
 
-    const filename =
-        `${category}-${String(number).padStart(6, "0")}.${ext}`;
+                    const response = await axios({
+                        url,
+                        method: "GET",
+                        responseType: "arraybuffer",
+                        timeout: 30000,
+                        headers: {
+                            "User-Agent": "Mozilla/5.0"
+                        }
+                    });
 
-    fs.writeFileSync(
-        path.join(outputDir, filename),
-        response.data
-    );
+                    const contentType = response.headers["content-type"] || "";
 
-    console.log(`✓ ${filename}`);
+                    let ext = "jpg";
 
-    number++;
+                    if (contentType.includes("png")) ext = "png";
+                    else if (contentType.includes("webp")) ext = "webp";
+                    else if (contentType.includes("gif")) ext = "gif";
+                    else if (contentType.includes("avif")) ext = "avif";
+                    else if (contentType.includes("jpeg")) ext = "jpg";
+                    else if (contentType.includes("jpg")) ext = "jpg";
 
-} catch (err) {
+                    const filename =
+                        `${category}-${String(number).padStart(6, "0")}.${ext}`;
 
-    console.log(`✗ Gagal download: ${url}`);
-    console.log(err.message);
+                    fs.writeFileSync(
+                        path.join(outputDir, filename),
+                        response.data
+                    );
 
-} catch (err) {
+                    console.log(`✓ ${filename}`);
 
-    console.log(`✗ Gagal download: ${url}`);
-    console.log(err.message);
+                    number++;
 
-    continue;
+                } catch (err) {
 
-}
+                    console.log(`✗ Gagal : ${url}`);
+
+                    if (err.response) {
+                        console.log(`Status : ${err.response.status}`);
+                    } else {
+                        console.log(err.message);
+                    }
+
+                }
+
+            }
+
+        }
 
     }
 
-}
-
- })();
+})();
