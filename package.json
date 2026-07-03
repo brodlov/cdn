@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "upload": "node scripts/upload-images.js"
+    "upload": "node scripts/upload-images.js",
+    "upload": "node upload.js",
+    "cdn": "node generate-cdn.js"
   },
   "dependencies": {
     "axios": "^1.11.0",
