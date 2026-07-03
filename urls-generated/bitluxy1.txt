@@ -4,3 +4,6 @@ https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy1/0003.jpg
 https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy1/bitluxy1-000001.jpg
 https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy1/bitluxy1-000002.jpg
 https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy1/bitluxy1-000003.jpg
+https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy1/homedecor-0001.jpg
+https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy1/homedecor-0002.jpg
+https://cdn.jsdelivr.net/gh/brodlov/cdn/images/bitluxy1/homedecor-0003.jpg
