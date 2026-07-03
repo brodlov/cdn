@@ -67,6 +67,9 @@ function slugify(text) {
 
             for (const url of lines) {
 
+                const currentNumber = number;
+                number++;
+
                 tasks.push(limit(async () => {
 
                     const downloadWithRetry = async (retries = 3) => {
@@ -90,15 +93,14 @@ function slugify(text) {
                             else if (type.includes("avif")) ext = "avif";
                             else if (type.includes("jpeg")) ext = "jpg";
 
-                            const baseName = path.parse(txt).name;
-                            const filename = `${baseName}-${String(number).padStart(4, "0")}.${ext}`;
+                            const filename = `${baseName}-${String(currentNumber).padStart(4, "0")}.${ext}`;
                             const filePath = path.join(pageOutputDir, filename);
 
                             fs.writeFileSync(filePath, res.data);
 
                             console.log(`✓ ${filename}`);
 
-                            number++;
+                            
 
                         } catch (err) {
 
