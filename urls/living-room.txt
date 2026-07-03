@@ -1,0 +1,3 @@
+https://example.com/image1.jpg
+https://example.com/image2.webp
+https://example.com/image3.png
