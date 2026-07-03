@@ -9,14 +9,40 @@ if (!fs.existsSync(OUTPUT_DIR)) {
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 }
 
-// ✅ filter image
 function isImage(file) {
     return /\.(jpg|jpeg|png|webp|gif|avif)$/i.test(file);
 }
 
-// ✅ natural sort
 function naturalSort(a, b) {
-    return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
+    return a.localeCompare(b, undefined, {
+        numeric: true,
+        sensitivity: "base"
+    });
+}
+
+function getImagesRecursive(dir) {
+    const results = [];
+
+    const items = fs.readdirSync(dir).sort(naturalSort);
+
+    for (const item of items) {
+
+        const fullPath = path.join(dir, item);
+        const stat = fs.statSync(fullPath);
+
+        if (stat.isDirectory()) {
+
+            results.push(...getImagesRecursive(fullPath));
+
+        } else if (isImage(item)) {
+
+            results.push(fullPath);
+
+        }
+
+    }
+
+    return results;
 }
 
 const categories = fs.readdirSync(IMAGES_DIR);
@@ -29,27 +55,29 @@ for (const category of categories) {
 
     console.log(`Processing: ${category}`);
 
-    const files = fs.readdirSync(categoryPath)
-        .filter(file => isImage(file))       // STEP 1
-        .filter(file => !file.startsWith(".")) // STEP 2
-        .sort(naturalSort);                  // STEP 3
+    const images = getImagesRecursive(categoryPath);
 
     const urls = [];
 
-    for (const file of files) {
+    for (const imagePath of images) {
 
-        const relativePath = path
-            .join("images", category, file)
-            .replace(/\\/g, "/");
+        const relativePath = imagePath.replace(/\\/g, "/");
 
-        urls.push(BASE_CDN + relativePath);
+        urls.push(`${BASE_CDN}${relativePath}`);
+
     }
 
-    const outputFile = path.join(OUTPUT_DIR, `${category}.txt`);
+    urls.sort(naturalSort);
+
+    const outputFile = path.join(
+        OUTPUT_DIR,
+        `${category.toLowerCase().replace(/\s+/g, "-")}.txt`
+    );
 
     fs.writeFileSync(outputFile, urls.join("\n"));
 
-    console.log(`✓ Saved: ${category}.txt (${urls.length} URLs)`);
+    console.log(`✓ Saved: ${outputFile} (${urls.length} URLs)`);
+
 }
 
 console.log("DONE ✔");
