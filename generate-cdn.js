@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-const BASE_CDN = "https://cdn.jsdelivr.net/gh/brodlov/img-cdn/";
+const BASE_CDN = "https://cdn.jsdelivr.net/gh/brodlov/cdn/";
 const IMAGES_DIR = "./images";
 const OUTPUT_DIR = "./urls-generated";
 
