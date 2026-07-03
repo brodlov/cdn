@@ -37,13 +37,13 @@ jobs:
       - name: Upload Images
         env:
           CHANGED_FILES: ${{ steps.changed.outputs.all_changed_files }}
-        run: node scripts/upload-images-v2.js
+        run: node scripts/upload-images.js
 
       # 2. Generate CDN URLs dari folder images
       - name: Generate CDN Lists
         env:
           CHANGED_FILES: ${{ steps.changed.outputs.all_changed_files }}
-        run: node scripts/generate-cdn-v2.js
+        run: node scripts/generate-cdn.js
 
       - name: Debug changed files
         run: |
