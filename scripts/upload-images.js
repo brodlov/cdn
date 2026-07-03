@@ -49,7 +49,6 @@ if (!fs.existsSync(outputDir)) {
 for (const url of lines) {
 
     console.log(`Download : ${url}`);
-
 try {
 
     const response = await axios({
@@ -58,16 +57,6 @@ try {
         responseType: "arraybuffer",
         timeout: 30000
     });
-
-    // kode rename dan save tetap di sini
-
-} catch (err) {
-
-    console.log(`✗ Gagal download: ${url}`);
-
-    continue;
-
-}
 
     let ext = "jpg";
 
@@ -89,6 +78,14 @@ try {
     console.log(`✓ ${filename}`);
 
     number++;
+
+} catch (err) {
+
+    console.log(`✗ Gagal download: ${url}`);
+    console.log(err.message);
+
+    continue;
+
 }
 
     }
