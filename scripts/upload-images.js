@@ -4,6 +4,12 @@ import axios from "axios";
 import pLimit from "p-limit";
 
 const limit = pLimit(5); // max 5 download bersamaan
+function slugify(text) {
+    return text
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, "-");
+}
 
 (async () => {
 
@@ -29,7 +35,8 @@ const limit = pLimit(5); // max 5 download bersamaan
 
         console.log(`Kategori: ${category}`);
 
-        const outputDir = path.join(IMAGES_DIR, category);
+        const categorySlug = slugify(category);
+        const outputDir = path.join(IMAGES_DIR, categorySlug);
         fs.mkdirSync(outputDir, { recursive: true });
 
         const txtFiles = fs.readdirSync(categoryPath)
@@ -41,7 +48,7 @@ const limit = pLimit(5); // max 5 download bersamaan
 
         for (const txt of txtFiles) {
 
-            const baseName = path.parse(txt).name;
+            const baseName = slugify(path.parse(txt).name);
 
             let number = 1;
 
