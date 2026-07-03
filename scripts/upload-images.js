@@ -50,11 +50,24 @@ for (const url of lines) {
 
     console.log(`Download : ${url}`);
 
+try {
+
     const response = await axios({
         url,
         method: "GET",
-        responseType: "arraybuffer"
+        responseType: "arraybuffer",
+        timeout: 30000
     });
+
+    // kode rename dan save tetap di sini
+
+} catch (err) {
+
+    console.log(`✗ Gagal download: ${url}`);
+
+    continue;
+
+}
 
     let ext = "jpg";
 
