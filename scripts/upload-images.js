@@ -1,7 +1,15 @@
 import fs from "fs";
 import path from "path";
+import axios from "axios";
 
+(async () => {
 const URLS_DIR = "./urls";
+const IMAGES_DIR = "./images";
+
+if (!fs.existsSync(IMAGES_DIR)) {
+    fs.mkdirSync(IMAGES_DIR, { recursive: true });
+}
+
 
 const categories = fs.readdirSync(URLS_DIR);
 
@@ -12,6 +20,12 @@ for (const category of categories) {
     if (!fs.statSync(categoryPath).isDirectory()) continue;
 
     console.log(`Kategori : ${category}`);
+
+    const outputDir = path.join(IMAGES_DIR, category);
+
+if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+}
 
     const txtFiles = fs.readdirSync(categoryPath)
         .filter(file => file.endsWith(".txt"));
@@ -30,10 +44,42 @@ for (const category of categories) {
 
         console.log(`  Total URL : ${lines.length}`);
 
-        for (const url of lines) {
-            console.log("     ", url);
-        }
+        let number = 1;
+
+for (const url of lines) {
+
+    console.log(`Download : ${url}`);
+
+    const response = await axios({
+        url,
+        method: "GET",
+        responseType: "arraybuffer"
+    });
+
+    let ext = "jpg";
+
+    const type = response.headers["content-type"] || "";
+
+    if (type.includes("png")) ext = "png";
+    else if (type.includes("webp")) ext = "webp";
+    else if (type.includes("jpeg")) ext = "jpg";
+    else if (type.includes("jpg")) ext = "jpg";
+
+    const filename =
+        `${category}-${String(number).padStart(6, "0")}.${ext}`;
+
+    fs.writeFileSync(
+        path.join(outputDir, filename),
+        response.data
+    );
+
+    console.log(`✓ ${filename}`);
+
+    number++;
+}
 
     }
 
 }
+
+ })();
