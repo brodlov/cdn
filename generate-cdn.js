@@ -20,32 +20,14 @@ function naturalSort(a, b) {
     });
 }
 
-function getImagesRecursive(dir) {
-    const results = [];
-
-    const items = fs.readdirSync(dir).sort(naturalSort);
-
-    for (const item of items) {
-
-        const fullPath = path.join(dir, item);
-        const stat = fs.statSync(fullPath);
-
-        if (stat.isDirectory()) {
-
-            results.push(...getImagesRecursive(fullPath));
-
-        } else if (isImage(item)) {
-
-            results.push(fullPath);
-
-        }
-
-    }
-
-    return results;
+function slugify(text) {
+    return text
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, "-");
 }
 
-const categories = fs.readdirSync(IMAGES_DIR);
+const categories = fs.readdirSync(IMAGES_DIR).sort(naturalSort);
 
 for (const category of categories) {
 
@@ -53,31 +35,33 @@ for (const category of categories) {
 
     if (!fs.statSync(categoryPath).isDirectory()) continue;
 
-    console.log(`Processing: ${category}`);
+    console.log(`Category: ${category}`);
 
-    const images = getImagesRecursive(categoryPath);
+    const pages = fs.readdirSync(categoryPath).sort(naturalSort);
 
-    const urls = [];
+    for (const page of pages) {
 
-    for (const imagePath of images) {
+        const pagePath = path.join(categoryPath, page);
 
-        const relativePath = imagePath.replace(/\\/g, "/");
+        if (!fs.statSync(pagePath).isDirectory()) continue;
 
-        urls.push(`${BASE_CDN}${relativePath}`);
+        const images = fs.readdirSync(pagePath)
+            .filter(isImage)
+            .sort(naturalSort);
 
+        const urls = images.map(file =>
+            `${BASE_CDN}${path.join("images", category, page, file).replace(/\\/g, "/")}`
+        );
+
+        const outputFile = path.join(
+            OUTPUT_DIR,
+            `${slugify(category)}-${slugify(page)}.txt`
+        );
+
+        fs.writeFileSync(outputFile, urls.join("\n"));
+
+        console.log(`✓ ${outputFile} (${urls.length})`);
     }
-
-    urls.sort(naturalSort);
-
-    const outputFile = path.join(
-        OUTPUT_DIR,
-        `${category.toLowerCase().replace(/\s+/g, "-")}.txt`
-    );
-
-    fs.writeFileSync(outputFile, urls.join("\n"));
-
-    console.log(`✓ Saved: ${outputFile} (${urls.length} URLs)`);
-
 }
 
 console.log("DONE ✔");
