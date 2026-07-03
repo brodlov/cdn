@@ -5,7 +5,7 @@ on:
 
   push:
     paths:
-      - 'urls/**'
+      - 'urls/**/*.txt'
 
 permissions:
   contents: write
