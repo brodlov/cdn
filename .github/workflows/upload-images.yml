@@ -3,6 +3,10 @@ name: Upload & Generate CDN URLs
 on:
   workflow_dispatch:
 
+  push:
+    paths:
+      - 'urls/**'
+
 permissions:
   contents: write
 
