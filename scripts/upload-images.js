@@ -274,11 +274,29 @@ for (const job of jobs) {
     .map(v => v.trim())
     .filter(Boolean);
 
+    if (lines.length === 0) {
+    
+        console.log(`Skip empty file: ${job.txtPath}`);
+    
+        continue;
+    
+    }
+
     const outputDir = path.join(
         IMAGES_DIR,
         job.categorySlug,
         job.pageSlug
     );
+
+    if (fs.existsSync(outputDir)) {
+    
+        console.log(
+            `Already processed: ${job.categorySlug}/${job.pageSlug}`
+        );
+    
+        continue;
+    
+    }
 
     ensureDir(outputDir);
 
